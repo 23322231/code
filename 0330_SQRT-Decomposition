@@ -1,0 +1,89 @@
+#include<bits/stdc++.h>
+#define ll long long
+using namespace std;
+
+struct blk{
+    vector<int> local;
+    ll global;//total
+    int tag;//add value
+    blk(){//初始化
+        local.clear();
+        tag=global=0;
+    }
+};
+
+int main(){
+    cin.tie(0);cout.tie(0);ios::sync_with_stdio(0);
+    int N, Q;
+    cin >> N;
+    int num[100005] = {};
+
+    blk cou[40000];
+
+    int len = sqrt(N);
+    int block = (N+len-1)/len;
+
+
+    for(int i = 0;i < N;i++){
+        cin >> num[i];
+        cou[i/len].local.push_back(num[i]);
+    }
+    for(int i = 0;i < block;i++){
+        sort(cou[i].local.begin(),cou[i].local.end());
+    }
+
+    cin >> Q;
+
+    while(Q--){
+
+        int x,a=0,b=0,c=0;
+        cin >> x;
+
+        if(x)
+            cin >> a >> b;
+        else
+            cin >> a >> b >> c;
+
+        if(x){
+            a--;
+            int n = a/len;
+            ll p = lower_bound(cou[n].local.begin(), cou[n].local.end(), num[a]) - cou[n].local.begin();
+            cou[n].local[p] = b;
+            num[a] = b;
+            sort(cou[n].local.begin(),cou[n].local.end());
+        }
+
+        else{
+            a--;b--;
+            int ans = 0;
+            int left = a/len, rig = b/len;
+
+            if(a/len == b/len){//在同一位置
+                for(int i = a;i <= b;i++){
+                    if(num[i] >= c)
+                        ans++;
+                }
+                cout << ans << '\n';
+            }
+
+            else{
+                for(int i = a;i < (left+1)*len;i++){
+                    if(num[i] >= c)
+                        ans++;
+                }
+
+                for(int i = left+1;i < rig;i++){
+                    ll p = lower_bound(cou[i].local.begin(),cou[i].local.end(),c) - cou[i].local.begin();
+                    ans+=(len-p);
+                }
+
+                for(int i = rig*len;i <= b;i++){
+                    if(num[i] >= c)
+                        ans++;
+                }
+
+                cout << ans << '\n';
+            }
+        }
+    }
+}
